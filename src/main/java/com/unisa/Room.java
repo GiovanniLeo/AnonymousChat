@@ -43,7 +43,7 @@ public class Room implements Serializable {
         return this.peers.remove(peer);
     }
 
-    public PeerAddress getHostPeer(PeerAddress sourcePeer, PeerAddress destinationPeer) {
+    public PeerAddress getForwarderPeer(PeerAddress sourcePeer, PeerAddress destinationPeer) {
         Random r = new Random();
         PeerAddress[] peerToArray = (PeerAddress[]) peers.toArray();
 
