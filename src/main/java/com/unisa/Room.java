@@ -1,5 +1,6 @@
 package com.unisa;
 
+import java.util.Iterator;
 import java.util.Random;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -35,22 +36,22 @@ public class Room implements Serializable {
     }
 
     public boolean addPeer(PeerAddress peer) {
-        this.peers.add(peer);
+        return this.peers.add(peer);
     }
 
     public boolean removePeer(PeerAddress peer) {
-        this.peers.remove(peer);
+        return this.peers.remove(peer);
     }
 
     public PeerAddress getHostPeer(PeerAddress sourcePeer, PeerAddress destinationPeer) {
         Random r = new Random();
-        int random_number = r.nextInt(peers.size());
+        PeerAddress[] peerToArray = (PeerAddress[]) peers.toArray();
 
-        while(true){
-
-            if(!((peers.toArray().[random_number]).peerId().equals(sourcePeer)) && !((peers.toArray().[random_number]).peerId().equals(destinationPeer)))
-                return (PeerAddress) peers.toArray().[random_number];
+        while (true) {
+            int random_number = r.nextInt(peers.size());
+            if(!(peerToArray[random_number].peerId().equals(sourcePeer.peerId()))&&!(peerToArray[random_number].peerId().equals(destinationPeer.peerId())))
+                return  peerToArray[random_number];
+            }
         }
-    }
 
-}
+    }
