@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AnonymousChatImpl implements AnonymousChat{
-    final private Peer peer;
+    private Peer peer;
     final private PeerDHT _dht;
     final private int DEFAULT_MASTER_PORT=4000;
     private List<String> registeredRooms;
