@@ -51,7 +51,23 @@ public class AnonymousChatImpl implements AnonymousChat {
             }
 
         });
+        Room forwarderRoom;
+        try {
+            FutureGet f = _dht.get(Number160.createHash("forwarderRoom")).start();
+            f.awaitUninterruptibly();
+            if (f.isSuccess() && !f.isEmpty()) {
+                forwarderRoom = (Room) f.dataMap().values().iterator().next().object();
+                if(forwarderRoom.getPeers().size()<10)
+                joinRoom("forwarderRoom");
+            } else if (f.isSuccess() && !f.isEmpty()) {
+                createRoom("forwarderRoom");
+            }
+        } catch (Exception e) {
+
+        }
+
     }
+
 
     @Override
     public boolean createRoom(String _room_name) {
