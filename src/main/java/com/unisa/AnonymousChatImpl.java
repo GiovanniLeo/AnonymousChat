@@ -95,23 +95,25 @@ public class AnonymousChatImpl implements AnonymousChat {
                                 //in peerForwarder c'è il peer che abbiamo recuperato dal metodo getForwarderPeer, ovvero il peer "ponte"
                             }
                         } else if (usersInRoom.size() == 2) {
-                            //cerco il forward nella room dedicata ai forward perchè
-                            // all'interno della room in cui si vuole inviare un messaggio sono presenti solo due peer
-                            try {
-                                FutureGet futureGetExternalRoom = _dht.get(Number160.createHash("forwarderRoom")).start();
-                                futureGetExternalRoom.awaitUninterruptibly();
-                                if (futureGetExternalRoom.isSuccess()) {
-                                    Room externalRoom = (Room) futureGetExternalRoom.dataMap().values().iterator().next().object();
-                                    peerForwarder = externalRoom.getForwarderPeer(peer.peerAddress(), peerToSend);
-                                    message.setDestination(peerToSend);
-                                    sendMessageToPeer(message, peerForwarder);
+                            if (!(peer.peerID().equals(peerToSend.peerId()))) {
+                                //cerco il forward nella room dedicata ai forward perchè
+                                // all'interno della room in cui si vuole inviare un messaggio sono presenti solo due peer
+                                try {
+                                    FutureGet futureGetExternalRoom = _dht.get(Number160.createHash("forwarderRoom")).start();
+                                    futureGetExternalRoom.awaitUninterruptibly();
+                                    if (futureGetExternalRoom.isSuccess()) {
+                                        Room externalRoom = (Room) futureGetExternalRoom.dataMap().values().iterator().next().object();
+                                        peerForwarder = externalRoom.getForwarderPeer(peer.peerAddress(), peerToSend);
+                                        message.setDestination(peerToSend);
+                                        sendMessageToPeer(message, peerForwarder);
+                                    }
+                                } catch (Exception e) {
+
                                 }
-                            } catch (Exception e) {
 
                             }
 
                         }
-
                     }
                     return true;
                 }
