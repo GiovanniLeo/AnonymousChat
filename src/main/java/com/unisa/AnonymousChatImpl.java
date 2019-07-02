@@ -37,15 +37,14 @@ public class AnonymousChatImpl implements AnonymousChat {
         peer.objectDataReply(new ObjectDataReply() {
             public Object reply(PeerAddress sender, Object request) throws Exception {
                 Message message = (Message) request;
-                if (!peer.peerID().equals(message.getDestination().peerId())){
+                if (!peer.peerID().equals(message.getDestination().peerId())) {
                     //se io peer non sono il peer destinazione, vuol dire che sono un peer forwarder
                     //dunque chiamo ancora il metodo sendMessageToPeer per inviarlo al peer destinazione
-                    sendMessageToPeer(message,message.getDestination());
+                    sendMessageToPeer(message, message.getDestination());
                     return null;
-                }
-                else{
+                } else {
                     //se io sono il peer destinazione non devo fare altro che il parse del messaggio ricevuto;
-                   return  _listener.parseMessage(message);
+                    return _listener.parseMessage(message);
                 }
 
             }
@@ -94,24 +93,25 @@ public class AnonymousChatImpl implements AnonymousChat {
                                 sendMessageToPeer(message, peerForwarder);
                                 //in message c'è la room a cui inviare il messaggio, il testo ed il peer destinazione (peerToSend)
                                 //in peerForwarder c'è il peer che abbiamo recuperato dal metodo getForwarderPeer, ovvero il peer "ponte"
-                            } else if (usersInRoom.size() == 2) {
-                                //cerco il forward nella room dedicata ai forward perchè
-                                // all'interno della room in cui si vuole inviare un messaggio sono presenti solo due peer
-                                try {
-                                    FutureGet futureGetExternalRoom = _dht.get(Number160.createHash("forwarderRoom")).start();
-                                    futureGetExternalRoom.awaitUninterruptibly();
-                                    if (futureGetExternalRoom.isSuccess()) {
-                                        Room externalRoom = (Room) futureGetExternalRoom.dataMap().values().iterator().next().object();
-                                        peerForwarder = externalRoom.getForwarderPeer(peer.peerAddress(), peerToSend);
-                                        message.setDestination(peerToSend);
-                                        sendMessageToPeer(message, peerForwarder);
-                                    }
-                                } catch (Exception e) {
-
+                            }
+                        } else if (usersInRoom.size() == 2) {
+                            //cerco il forward nella room dedicata ai forward perchè
+                            // all'interno della room in cui si vuole inviare un messaggio sono presenti solo due peer
+                            try {
+                                FutureGet futureGetExternalRoom = _dht.get(Number160.createHash("forwarderRoom")).start();
+                                futureGetExternalRoom.awaitUninterruptibly();
+                                if (futureGetExternalRoom.isSuccess()) {
+                                    Room externalRoom = (Room) futureGetExternalRoom.dataMap().values().iterator().next().object();
+                                    peerForwarder = externalRoom.getForwarderPeer(peer.peerAddress(), peerToSend);
+                                    message.setDestination(peerToSend);
+                                    sendMessageToPeer(message, peerForwarder);
                                 }
+                            } catch (Exception e) {
 
                             }
+
                         }
+
                     }
                     return true;
                 }
