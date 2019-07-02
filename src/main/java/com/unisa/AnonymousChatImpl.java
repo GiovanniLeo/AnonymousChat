@@ -57,9 +57,9 @@ public class AnonymousChatImpl implements AnonymousChat {
             f.awaitUninterruptibly();
             if (f.isSuccess() && !f.isEmpty()) {
                 forwarderRoom = (Room) f.dataMap().values().iterator().next().object();
-                if(forwarderRoom.getPeers().size()<10)
-                joinRoom("forwarderRoom");
-            } else if (f.isSuccess() && !f.isEmpty()) {
+                if (forwarderRoom.getPeers().size() < 10)
+                    joinRoom("forwarderRoom");
+            } else if (f.isSuccess() && f.isEmpty()) {
                 createRoom("forwarderRoom");
             }
         } catch (Exception e) {
