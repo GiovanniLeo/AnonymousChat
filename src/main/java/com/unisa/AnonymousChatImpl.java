@@ -69,12 +69,6 @@ public class AnonymousChatImpl implements AnonymousChat {
     }
 
 
-    /**
-     *
-     * @param _room_name a String the name identify the public chat room.
-     * @return boolean
-     * This me
-     */
     @Override
     public boolean createRoom(String _room_name) {
         try{
@@ -108,6 +102,8 @@ public class AnonymousChatImpl implements AnonymousChat {
                         .iterator()
                         .next()
                         .object();
+
+                //The peer will join in the room only if he had not yet joined
                 if(!room.getPeers().contains(peer.peerAddress())){
                     room.addPeer(this.peer.peerAddress());
                     _dht.put(Number160.createHash(_room_name))
@@ -258,6 +254,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                     PeerAddress peerInRoom = (PeerAddress) peersInRoom[0];
 
                     if (peer.peerAddress().equals(peerInRoom)){
+                        //Fist the peer leave the room then destroy it
                         if(leaveRoom(_room_name)){
                             System.out.println("Room leaved");
                         } else {
