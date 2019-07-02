@@ -11,6 +11,7 @@ import net.tomp2p.p2p.PeerBuilder;
 import net.tomp2p.peers.Number160;
 import net.tomp2p.peers.PeerAddress;
 import net.tomp2p.rpc.ObjectDataReply;
+import net.tomp2p.storage.Data;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -64,6 +65,23 @@ public class AnonymousChatImpl implements AnonymousChat {
 
     @Override
     public boolean leaveRoom(String _room_name) {
+        Room room;
+        try {
+            FutureGet futureGet = _dht.get(Number160.createHash(_room_name)).start();
+            futureGet.awaitUninterruptibly();
+            if (futureGet.isSuccess()) {
+                room = (Room) futureGet.dataMap().values().iterator().next().object();
+                if (room.getPeers().contains(peer.peerAddress())) {
+                    room.removePeer(peer.peerAddress());
+                    _dht.put(Number160.createHash(_room_name)).data((new Data(room))).start().awaitUninterruptibly();
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+
+        }
         return false;
     }
 
