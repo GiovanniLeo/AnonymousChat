@@ -23,7 +23,7 @@ public class AnonymousChatImpl implements AnonymousChat {
     private Peer peer;
     final private PeerDHT _dht;
     final private int DEFAULT_MASTER_PORT = 4000;
-    private List<String> registeredRooms;
+    private ArrayList<String> registeredRooms;
 
     public AnonymousChatImpl(int _id, String _master_peer, final MessageListener _listener) throws IOException {
         this.registeredRooms = new ArrayList<String>();
@@ -63,19 +63,66 @@ public class AnonymousChatImpl implements AnonymousChat {
                 createRoom("forwarderRoom");
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
 
     }
 
 
+    /**
+     *
+     * @param _room_name a String the name identify the public chat room.
+     * @return boolean
+     * This me
+     */
     @Override
     public boolean createRoom(String _room_name) {
+        try{
+            Room room = new Room(_room_name);
+            FutureGet futureGet = _dht.get(Number160.createHash(_room_name)).start();
+            futureGet.awaitUninterruptibly();
+            if(futureGet.isSuccess() && futureGet.isEmpty()){
+                _dht.put(Number160.createHash(_room_name))
+                        .data(new Data(room))
+                        .start()
+                        .awaitUninterruptibly();
+
+                return true;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
         return false;
     }
 
     @Override
     public boolean joinRoom(String _room_name) {
+        try{
+            FutureGet futureGet = _dht.get(Number160.createHash(_room_name)).start();
+            futureGet.awaitUninterruptibly();
+            if(futureGet.isSuccess() && !futureGet.isEmpty()){
+                Room room = (Room) futureGet.dataMap()
+                        .values()
+                        .iterator()
+                        .next()
+                        .object();
+                if(!room.getPeers().contains(peer.peerAddress())){
+                    room.addPeer(this.peer.peerAddress());
+                    _dht.put(Number160.createHash(_room_name))
+                            .data(new Data(room))
+                            .start()
+                            .awaitUninterruptibly();
+                    this.registeredRooms.add(_room_name);
+                    return true;
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
         return false;
     }
 
@@ -90,13 +137,14 @@ public class AnonymousChatImpl implements AnonymousChat {
                 if (room.getPeers().contains(peer.peerAddress())) {
                     room.removePeer(peer.peerAddress());
                     _dht.put(Number160.createHash(_room_name)).data((new Data(room))).start().awaitUninterruptibly();
+                    registeredRooms.remove(_room_name);
                     return true;
                 } else {
                     return false;
                 }
             }
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return false;
     }
@@ -142,7 +190,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                                         sendMessageToPeer(message, peerForwarder);
                                     }
                                 } catch (Exception e) {
-
+                                    e.printStackTrace();
                                 }
 
                             }
@@ -155,7 +203,7 @@ public class AnonymousChatImpl implements AnonymousChat {
 
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
         return false;
     }
@@ -169,6 +217,70 @@ public class AnonymousChatImpl implements AnonymousChat {
                 }
             }
         });
+    }
+
+    public boolean leaveNetwork(){
+        boolean fault = true;
+        if(registeredRooms.size()==0){
+            return false;
+        }
+
+
+        for(int i = 0; i < registeredRooms.size(); i++ ){
+            boolean error= leaveRoom(registeredRooms.get(i));
+            if(!error)  fault=false;
+        }
+
+        if(!fault)  return false;
+        System.out.println("Shutdown start");
+        try {
+            _dht.peer().announceShutdown().start().awaitUninterruptibly();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    public boolean destroyRoom(String _room_name){
+        try{
+            FutureGet futureGet = _dht.get(Number160.createHash(_room_name)).start();
+            futureGet.awaitUninterruptibly();
+            if(futureGet.isSuccess()){
+                Room room = (Room) futureGet.dataMap()
+                        .values()
+                        .iterator()
+                        .next()
+                        .object();
+                if(room.getPeers().size() == 1){
+                    Object[] peersInRoom = room.getPeers().toArray();
+                    PeerAddress peerInRoom = (PeerAddress) peersInRoom[0];
+
+                    if (peer.peerAddress().equals(peerInRoom)){
+                        if(leaveRoom(_room_name)){
+                            System.out.println("Room leaved");
+                        } else {
+                            System.out.println("Room not leaved");
+                        }
+                        try{
+                            _dht.remove(Number160.createHash(_room_name))
+                                    .start()
+                                    .awaitUninterruptibly();
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                    }
+                }
+                return true;
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
 
