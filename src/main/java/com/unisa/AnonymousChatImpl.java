@@ -39,12 +39,11 @@ public class AnonymousChatImpl implements AnonymousChat {
             public Object reply(PeerAddress sender, Object request) throws Exception {
                 Message message = (Message) request;
                 if (!peer.peerID().equals(message.getDestination().peerId())) {
-                    //se io peer non sono il peer destinazione, vuol dire che sono un peer forwarder
-                    //dunque chiamo ancora il metodo sendMessageToPeer per inviarlo al peer destinazione
+                    //if I'm not the destination it means that I have to forward again
                     sendMessageToPeer(message, message.getDestination());
                     return null;
                 } else {
-                    //se io sono il peer destinazione non devo fare altro che il parse del messaggio ricevuto;
+                    //if I'm the destination I only have to parse message
                     return _listener.parseMessage(message);
                 }
 
@@ -71,11 +70,11 @@ public class AnonymousChatImpl implements AnonymousChat {
 
     @Override
     public boolean createRoom(String _room_name) {
-        try{
+        try {
             Room room = new Room(_room_name);
             FutureGet futureGet = _dht.get(Number160.createHash(_room_name)).start();
             futureGet.awaitUninterruptibly();
-            if(futureGet.isSuccess() && futureGet.isEmpty()){
+            if (futureGet.isSuccess() && futureGet.isEmpty()) {
                 _dht.put(Number160.createHash(_room_name))
                         .data(new Data(room))
                         .start()
@@ -83,8 +82,7 @@ public class AnonymousChatImpl implements AnonymousChat {
 
                 return true;
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -93,10 +91,10 @@ public class AnonymousChatImpl implements AnonymousChat {
 
     @Override
     public boolean joinRoom(String _room_name) {
-        try{
+        try {
             FutureGet futureGet = _dht.get(Number160.createHash(_room_name)).start();
             futureGet.awaitUninterruptibly();
-            if(futureGet.isSuccess() && !futureGet.isEmpty()){
+            if (futureGet.isSuccess() && !futureGet.isEmpty()) {
                 Room room = (Room) futureGet.dataMap()
                         .values()
                         .iterator()
@@ -104,7 +102,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                         .object();
 
                 //The peer will join in the room only if he had not yet joined
-                if(!room.getPeers().contains(peer.peerAddress())){
+                if (!room.getPeers().contains(peer.peerAddress())) {
                     room.addPeer(this.peer.peerAddress());
                     _dht.put(Number160.createHash(_room_name))
                             .data(new Data(room))
@@ -114,8 +112,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                     return true;
                 }
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -155,27 +152,25 @@ public class AnonymousChatImpl implements AnonymousChat {
             if (futureGet.isSuccess()) {
                 Room room = (Room) futureGet.dataMap().values().iterator().next().object();
                 if (!room.getPeers().contains(peer.peerAddress()))
-                    //vuol dire che sto provando ad inviare un messaggio in una room in cui non ci sono
+                    //I can't send message if i'm not in that room
                     return false;
                 else {
                     HashSet<PeerAddress> usersInRoom = room.getPeers();
                     for (PeerAddress peerToSend : usersInRoom) {
-                        //per tutti i peer presenti nella room
+                        //for each peer in room
                         if (usersInRoom.size() > 2) {
-                            //cerco il forward all'interno della stanza
+                            //I'm looking for a peer in room that will forward message
                             if (!(peer.peerID().equals(peerToSend.peerId()))) {
-                                //se non sono io il peer a cui inviare il messaggio
+                                //if I'm not the peer destination
                                 peerForwarder = room.getForwarderPeer(peer.peerAddress(), peerToSend);
-                                //perForwarder è il peer che fa da ponte, colui che invierà al peerTosend
+                                //perForwarder is the peer that will forward message
                                 message.setDestination(peerToSend);
                                 sendMessageToPeer(message, peerForwarder);
-                                //in message c'è la room a cui inviare il messaggio, il testo ed il peer destinazione (peerToSend)
-                                //in peerForwarder c'è il peer che abbiamo recuperato dal metodo getForwarderPeer, ovvero il peer "ponte"
+                                //in peerForwarder there is the peer that will forward message
                             }
                         } else if (usersInRoom.size() == 2) {
                             if (!(peer.peerID().equals(peerToSend.peerId()))) {
-                                //cerco il forward nella room dedicata ai forward perchè
-                                // all'interno della room in cui si vuole inviare un messaggio sono presenti solo due peer
+                                //I'm looking for a peer in "external room" that will forward message
                                 try {
                                     FutureGet futureGetExternalRoom = _dht.get(Number160.createHash("forwarderRoom")).start();
                                     futureGetExternalRoom.awaitUninterruptibly();
@@ -215,57 +210,55 @@ public class AnonymousChatImpl implements AnonymousChat {
         });
     }
 
-    public boolean leaveNetwork(){
+    public boolean leaveNetwork() {
         boolean fault = true;
-        if(registeredRooms.size()==0){
+        if (registeredRooms.size() == 0) {
             return false;
         }
 
 
-        for(int i = 0; i < registeredRooms.size(); i++ ){
-            boolean error= leaveRoom(registeredRooms.get(i));
-            if(!error)  fault=false;
+        for (int i = 0; i < registeredRooms.size(); i++) {
+            boolean error = leaveRoom(registeredRooms.get(i));
+            if (!error) fault = false;
         }
 
-        if(!fault)  return false;
+        if (!fault) return false;
         System.out.println("Shutdown start");
         try {
             _dht.peer().announceShutdown().start().awaitUninterruptibly();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return true;
     }
 
-    public boolean destroyRoom(String _room_name){
-        try{
+    public boolean destroyRoom(String _room_name) {
+        try {
             FutureGet futureGet = _dht.get(Number160.createHash(_room_name)).start();
             futureGet.awaitUninterruptibly();
-            if(futureGet.isSuccess()){
+            if (futureGet.isSuccess()) {
                 Room room = (Room) futureGet.dataMap()
                         .values()
                         .iterator()
                         .next()
                         .object();
-                if(room.getPeers().size() == 1){
+                if (room.getPeers().size() == 1) {
                     Object[] peersInRoom = room.getPeers().toArray();
                     PeerAddress peerInRoom = (PeerAddress) peersInRoom[0];
 
-                    if (peer.peerAddress().equals(peerInRoom)){
+                    if (peer.peerAddress().equals(peerInRoom)) {
                         //Fist the peer leave the room then destroy it
-                        if(leaveRoom(_room_name)){
+                        if (leaveRoom(_room_name)) {
                             System.out.println("Room leaved");
                         } else {
                             System.out.println("Room not leaved");
                         }
-                        try{
+                        try {
                             _dht.remove(Number160.createHash(_room_name))
                                     .start()
                                     .awaitUninterruptibly();
-                        }
-                        catch (Exception e){
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
 
@@ -273,8 +266,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                 }
                 return true;
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
