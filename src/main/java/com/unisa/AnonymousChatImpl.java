@@ -249,11 +249,7 @@ public class AnonymousChatImpl implements AnonymousChat {
 
                     if (peer.peerAddress().equals(peerInRoom)) {
                         //Fist the peer leave the room then destroy it
-                        if (leaveRoom(_room_name)) {
-                            System.out.println("Room leaved");
-                        } else {
-                            System.out.println("Room not leaved");
-                        }
+                        leaveRoom(_room_name);
                         try {
                             _dht.remove(Number160.createHash(_room_name))
                                     .start()
