@@ -14,7 +14,7 @@ public class MessageListenerImpl implements  MessageListener {
     @Override
     public Object parseMessage(Object obj) {
         this.msg = (Message) obj;
-        System.out.println(peerID+"-> (Direct Message Received) "+obj);
+        System.out.println("peer"+peerID+" -> (Direct Message Received) "+msg.getMessage());
         return Constants.SUCCESS;
     }
 

@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public class AnonymousChatImpl implements AnonymousChat {
-    private Peer peer;
+    final private Peer peer;
     final private PeerDHT _dht;
     final private int DEFAULT_MASTER_PORT = 4000;
     private ArrayList<String> registeredRooms;
@@ -204,7 +204,7 @@ public class AnonymousChatImpl implements AnonymousChat {
         futureDirect.addListener(new BaseFutureAdapter<FutureDirect>() {
             public void operationComplete(FutureDirect future) throws Exception {
                 if (future.isSuccess()) {
-                    System.out.println("Ho inviato a " + peerForwarder);
+                    System.out.println("Io peer -> " + peer.peerID() + " Ho inviato a " + peerForwarder.peerId());
                 }
             }
         });
@@ -258,13 +258,12 @@ public class AnonymousChatImpl implements AnonymousChat {
                             _dht.remove(Number160.createHash(_room_name))
                                     .start()
                                     .awaitUninterruptibly();
+                            return true;
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-
                     }
                 }
-                return true;
             }
         } catch (Exception e) {
             e.printStackTrace();

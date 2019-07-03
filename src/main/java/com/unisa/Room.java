@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.Random;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Set;
 
 
 import net.tomp2p.peers.PeerAddress;
@@ -45,7 +46,9 @@ public class Room implements Serializable {
 
     public PeerAddress getForwarderPeer(PeerAddress sourcePeer, PeerAddress destinationPeer) {
         Random r = new Random();
-        PeerAddress[] peerToArray = (PeerAddress[]) peers.toArray();
+        Set<PeerAddress> s = new HashSet<PeerAddress>();
+        s.addAll(peers);
+        PeerAddress[] peerToArray =  s.toArray(new PeerAddress[s.size()]);
 
         while (true) {
             int random_number = r.nextInt(peers.size());
