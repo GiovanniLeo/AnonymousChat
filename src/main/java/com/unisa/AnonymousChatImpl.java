@@ -151,7 +151,7 @@ public class AnonymousChatImpl implements AnonymousChat {
             futureGet.awaitUninterruptibly();
             if (futureGet.isSuccess()) {
                 Room room = (Room) futureGet.dataMap().values().iterator().next().object();
-                if (!room.getPeers().contains(peer.peerAddress()))
+                if (!room.getPeers().contains(peer.peerAddress()) || room.getPeers().size()==1)
                     //I can't send message if i'm not in that room
                     return false;
                 else {
