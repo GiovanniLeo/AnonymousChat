@@ -35,8 +35,8 @@ public class AppTest
         boolean flag = peer1.createRoom("Stanza1");
         assertTrue("The room is correcly created", flag);
         //This should not create a room because the room already exist
-        //   boolean flag1 = peer1.createRoom("Stanza1");
-        //   assertFalse("The room is correcly created", flag1);
+        boolean flag1 = peer1.createRoom("Stanza1");
+        assertFalse("The room is correcly created", flag1);
     }
 
     @Test
@@ -45,21 +45,21 @@ public class AppTest
         boolean flag = peer1.joinRoom("Stanza1");
         assertTrue(flag);
         //The peer should not join to the room
-        //  boolean flag1 = peer1.joinRoom("Stanza1");
-        //assertFalse(flag1);
+        boolean flag1 = peer1.joinRoom("Stanza1");
+        assertFalse(flag1);
     }
     @Test
     public void testC_ShouldSendMessage() throws InterruptedException {
-        //The peer should not send the message
-        boolean y = peer2.joinRoom("Stanza1");
-        assertTrue(y);
-        x = peer1.sendMessage("Stanza1","Hello World!");
-        assertTrue(x);
-        //The peer should send a message
-        boolean z = peer2.leaveRoom("Stanza1");
-        assertTrue(z);
-        boolean flag = peer1.sendMessage("Stanza1","Hello World!");
-        assertFalse(flag);
+        //The peer should send the message
+        boolean flag = peer2.joinRoom("Stanza1");
+        assertTrue(flag);
+        boolean flag1 = peer1.sendMessage("Stanza1","Hello World!");
+        assertTrue(flag1);
+        //The peer should not send a message due to he isn't in the room
+        boolean flag2 = peer2.leaveRoom("Stanza1");
+        assertTrue(flag2);
+        boolean flag3 = peer2.sendMessage("Stanza1","Hello World!");
+        assertFalse(flag3);
     }
     @Test
     public void testD_ShouldLeaveRoom(){
@@ -88,10 +88,12 @@ public class AppTest
         boolean flag = peer1.leaveNetwork();
         assertFalse(flag);
         //The peer should not join to the room
-        peer1.createRoom("Stanza1");
-        peer1.joinRoom("Stanza1");
-        boolean flag1 = peer1.leaveNetwork();
+        boolean flag1 = peer1.createRoom("Stanza1");
         assertTrue(flag1);
+        boolean flag2 = peer1.joinRoom("Stanza1");
+        assertTrue(flag2);
+        boolean flag3 = peer1.leaveNetwork();
+        assertTrue(flag3);
     }
 
 }

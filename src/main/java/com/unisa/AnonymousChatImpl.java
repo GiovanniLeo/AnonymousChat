@@ -113,12 +113,9 @@ public class AnonymousChatImpl implements AnonymousChat {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Eccezione lanciata");
             e.printStackTrace();
         }
-        //finally {
-            return false;
-        //}
+        return false;
     }
 
     @Override
@@ -153,9 +150,9 @@ public class AnonymousChatImpl implements AnonymousChat {
             futureGet.awaitUninterruptibly();
             if (futureGet.isSuccess()) {
                 Room room = (Room) futureGet.dataMap().values().iterator().next().object();
-                if (!room.getPeers().contains(peer.peerAddress()) || room.getPeers().size()==1) {
+                if (!room.getPeers().contains(peer.peerAddress()) && room.getPeers().size()<2) {
                     //I can't send message if i'm not in that room
-                    System.out.println("False malvage");
+                    System.out.println("He is'nt in the room "+_room_name);
                     return false;
                 }
                 else {
@@ -191,8 +188,8 @@ public class AnonymousChatImpl implements AnonymousChat {
                             }
 
                         }
-                        return true;
                     }
+                    return true;
                 }
             }
 
@@ -200,7 +197,6 @@ public class AnonymousChatImpl implements AnonymousChat {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("False try");
         return false;
     }
 
