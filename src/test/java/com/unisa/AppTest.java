@@ -53,11 +53,11 @@ public class AppTest
         //The peer should send a message
         peer2.joinRoom("Stanza1");
         boolean flag = peer1.sendMessage("Stanza1","Hello World!");
-        assertFalse(flag);
+        assertTrue(flag);
         //The peer should not send the message
         peer2.leaveRoom("Stanza1");
         boolean flag1 = peer1.sendMessage("Stanza1","Hello World!");
-        assertTrue(flag1);
+        assertFalse(flag1);
     }
     @Test
     public void testD_ShouldLeaveRoom(){

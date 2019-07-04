@@ -187,8 +187,8 @@ public class AnonymousChatImpl implements AnonymousChat {
                             }
 
                         }
+                        return true;
                     }
-                    return true;
                 }
             }
 
