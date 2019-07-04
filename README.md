@@ -12,7 +12,7 @@ It is an anonymous chat API based on P2P Network. Each peer can send messages on
 ### Additional operation
 
 - *destroyRoom*: a peer can destroy a public room if it is the only member.
-- *leaveNetwork*: a peer can leave netwok if he at least registred in a room.
+- *leaveNetwork*: a peer can leave netwok if he is at least registred in a room.
 
 ### Technologies
 
