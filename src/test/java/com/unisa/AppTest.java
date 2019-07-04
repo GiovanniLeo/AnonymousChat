@@ -48,9 +48,19 @@ public class AppTest
         boolean flag1 = peer1.joinRoom("Stanza1");
         assertFalse(flag1);
     }
-
     @Test
-    public void testC_ShouldLeaveRoom(){
+    public void testC_ShouldSendMessage(){
+        //The peer should send a message
+        peer2.joinRoom("Stanza1");
+        boolean flag = peer1.sendMessage("Stanza1","Hello World!");
+        assertFalse(flag);
+        //The peer should not send the message
+        peer2.leaveRoom("Stanza1");
+        boolean flag1 = peer1.sendMessage("Stanza1","Hello World!");
+        assertTrue(flag1);
+    }
+    @Test
+    public void testD_ShouldLeaveRoom(){
         //The peer should join to the room
         boolean flag = peer1.leaveRoom("Stanza1");
         assertTrue(flag);
@@ -60,7 +70,7 @@ public class AppTest
     }
 
     @Test
-    public void testD_ShouldDestroyRoom(){
+    public void testE_ShouldDestroyRoom(){
         //The peer should join to the room
         peer1.joinRoom("Stanza1");
         boolean flag = peer1.destroyRoom("Stanza1");
@@ -71,7 +81,7 @@ public class AppTest
     }
 
     @Test
-    public void testE_ShouldLeaveTheNetwork(){
+    public void testF_ShouldLeaveTheNetwork(){
         //The peer should join to the room
         boolean flag = peer1.leaveNetwork();
         assertFalse(flag);
@@ -81,7 +91,5 @@ public class AppTest
         boolean flag1 = peer1.leaveNetwork();
         assertTrue(flag1);
     }
-
-
 
 }
