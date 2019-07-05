@@ -93,31 +93,31 @@ public class AppTest
     }
     @Test
     public void testD_ShouldLeaveRoom(){
-        //The peer should join to the room
+        //The peer should leave the room
         boolean flag = peer1.leaveRoom("Stanza1");
         assertTrue(flag);
-        //The peer should not join to the room
+        //The peer already leaved the room so the result will be false
         boolean flag1 = peer1.leaveRoom("Stanza1");
         assertFalse(flag1);
     }
 
     @Test
     public void testE_ShouldDestroyRoom(){
-        //The peer should join to the room
+        //The peer should destroy the room
         peer1.joinRoom("Stanza1");
         boolean flag = peer1.destroyRoom("Stanza1");
         assertTrue(flag);
-        //The peer should not join to the room
+        //The peer already destroyed the room so the result will be false
         boolean flag1 = peer1.destroyRoom("Stanza1");
         assertFalse(flag1);
     }
 
     @Test
     public void testF_ShouldLeaveTheNetwork(){
-        //The peer should join to the room
+        //The peer should not leave the network because there is no registered room
         boolean flag = peer1.leaveNetwork();
         assertFalse(flag);
-        //The peer should not join to the room
+        //The peer should leave the network
         boolean flag1 = peer1.createRoom("Stanza1");
         assertTrue(flag1);
         boolean flag2 = peer1.joinRoom("Stanza1");
