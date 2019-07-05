@@ -141,6 +141,10 @@ public class AnonymousChatImpl implements AnonymousChat {
         return false;
     }
 
+    public ArrayList<String> getRegisteredRooms() {
+        return registeredRooms;
+    }
+
     @Override
     public boolean sendMessage(String _room_name, String _text_message) {
         Message message = new Message(_text_message, _room_name);
@@ -150,7 +154,7 @@ public class AnonymousChatImpl implements AnonymousChat {
             futureGet.awaitUninterruptibly();
             if (futureGet.isSuccess()) {
                 Room room = (Room) futureGet.dataMap().values().iterator().next().object();
-                if (!room.getPeers().contains(peer.peerAddress()) && room.getPeers().size()<2) {
+                if (!room.getPeers().contains(peer.peerAddress()) || room.getPeers().size()<2) {
                     //I can't send message if i'm not in that room
                     System.out.println("He is'nt in the room "+_room_name);
                     return false;
