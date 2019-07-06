@@ -12,7 +12,7 @@ It is an anonymous chat API based on P2P Network. Each peer can send messages on
 ### Additional operation
 
 - *destroyRoom*: a peer can destroy a public room if it is the only member.
-- *leaveNetwork*: a peer can leave netwok if he is at least registred in a room.
+- *leaveNetwork*: a peer can leave netwok.
 
 ### Technologies
 
@@ -34,13 +34,15 @@ The main program is structured in four Java classes and two Java interfaces :
 - _Message_: a class thet contains all the informations about a message.
 - _MessageLister_: the API that define the message listener.
 - _MessageListenerImpl_: a simple implpementation of a method for parsing the messages.
-- _Room_: a class thet contains all the informations about a room.
+- _Room_: a class that contains all the informations about a room.
 - _Terminal_ a terminal to interact with the system.
 
 The project provide also the class _AppTest_ which is a JUnit test case.
 
 ## Protocol Description
 
+
+The project is based on creating an anonymous chat. Two peers can communicate anonymously provided there are at least three peers on the network. A newly created peer will automatically join the "forwarderRoom" room if its size is less than ten. When a peer wants to send a message inside a room he checks the size of it. If there is only one other peer in the room where you want to send the message, to guarantee anonymity, the message will be forwarded to a peer in the "forwarderRoom" room and the latter will have the task of sending the message to the recipient. If in the room where you want to send a message there are two other peers compared to the sender, this will forward it to one of the two who will have the task of sending it to the respective recipient.
 
 
 ### Build app in a Docker container
@@ -64,6 +66,8 @@ When master is started you have to check the ip address of your container:
 
 Now you can start your peers varying the unique peer id:  
 ```docker run -i --name PEER-1 -e MASTERIP="172.17.0.2" -e ID=1 anonymousChat```
+
+**To run correctly the application you must run at least three peers.**
 
 ### Developed by:
 
