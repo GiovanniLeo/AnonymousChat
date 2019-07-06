@@ -42,7 +42,7 @@ The project provide also the class _AppTest_ which is a JUnit test case.
 ## Protocol Description
 
 
-The project is based on creating an anonymous chat. Two peers can communicate anonymously provided there are at least three peers on the network. A newly created peer will automatically join the "forwarderRoom" room if its size is less than ten. When a peer wants to send a message inside a room he checks the size of it. If there is only one other peer in the room where you want to send the message, to guarantee anonymity, the message will be forwarded to a peer in the "forwarderRoom" room and the latter will have the task of sending the message to the recipient. If in the room where you want to send a message there are two other peers compared to the sender, this will forward it to one of the two who will have the task of sending it to the respective recipient.
+The project is based on creating an anonymous chat. Two peers can communicate anonymously provided there are at least three peers on the network. A newly created peer will automatically join the "forwarderRoom" room if its size is less than ten. When a peer wants to send a message inside a room he checks the size of it. If there is only another peer in the room where you want to send the message, to guarantee anonymity, the message will be forwarded to a peer in the "forwarderRoom" room and the latter will have the task of sending the message to the recipient. If in the room where you want to send a message there are at least other two peers, you will forward it to one of  them who will have the task of sending it to the respective recipient.
 
 
 ### Build app in a Docker container
