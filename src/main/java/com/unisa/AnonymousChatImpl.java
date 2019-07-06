@@ -64,7 +64,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                 createRoom("forwarderRoom");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+           e.printStackTrace();
         }
 
     }
@@ -85,7 +85,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                 return true;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
 
         return false;
@@ -115,7 +115,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
         return false;
     }
@@ -138,7 +138,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
         return false;
     }
@@ -188,7 +188,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                                         sendMessageToPeer(message, peerForwarder);
                                     }
                                 } catch (Exception e) {
-                                    e.printStackTrace();
+                                    return false;
                                 }
 
                             }
@@ -201,7 +201,7 @@ public class AnonymousChatImpl implements AnonymousChat {
 
 
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
         return false;
     }
@@ -211,7 +211,7 @@ public class AnonymousChatImpl implements AnonymousChat {
         futureDirect.addListener(new BaseFutureAdapter<FutureDirect>() {
             public void operationComplete(FutureDirect future) throws Exception {
                 if (future.isSuccess()) {
-                    System.out.println("peer id: " + peer.peerID() + " ho inviato a " + peerForwarder.peerId());
+                    System.out.println("Forwarding Start");
                 }
             }
         });
@@ -231,7 +231,7 @@ public class AnonymousChatImpl implements AnonymousChat {
         try {
             _dht.peer().announceShutdown().start().awaitUninterruptibly();
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
 
         return true;
@@ -260,7 +260,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                                     .awaitUninterruptibly();
                             return true;
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            return false;
                         }
                     }
                 }
