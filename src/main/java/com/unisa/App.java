@@ -30,7 +30,7 @@ public class App
 
             if(peer1.joinRoom("Stanza1")) System.out.println("peer1 join Stanza 1");
 
-            if(peer2.sendMessage("Stanza1","Ciao a tutti belli"))System.out.println("ho inviato il messaggio");
+            if(peer2.sendMessage("Stanza1","Ciao a tutti belli"))System.out.println("peer2: ho inviato il messaggio");
 
             if(peer1.destroyRoom("Stanza1")) System.out.println("peer1 destroy Stanza 1 ");
             if(peer1.createRoom("Stanza1")) System.out.println("Stanza 1 creata");

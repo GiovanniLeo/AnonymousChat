@@ -6,7 +6,7 @@ import net.tomp2p.peers.PeerAddress;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class MessageListenerImpl implements  MessageListener {
-    private Message msg;
+    private Message msg = null;
     private int peerID;
     private volatile boolean arrived = false;
 

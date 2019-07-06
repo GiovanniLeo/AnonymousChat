@@ -24,9 +24,11 @@ public class AnonymousChatImpl implements AnonymousChat {
     final private PeerDHT _dht;
     final private int DEFAULT_MASTER_PORT = 4000;
     private ArrayList<String> registeredRooms;
+    private MessageListener listener;
 
-    public AnonymousChatImpl(int _id, String _master_peer, final MessageListener _listener) throws IOException {
+    public AnonymousChatImpl(int _id, String _master_peer, MessageListener _listener) throws IOException {
         this.registeredRooms = new ArrayList<String>();
+        this.listener = _listener;
         this.peer = new PeerBuilder(Number160.createHash(_id)).ports(DEFAULT_MASTER_PORT + _id).start();
         this._dht = new PeerBuilderDHT(peer).start();
         FutureBootstrap fb = peer.bootstrap().inetAddress(InetAddress.getByName(_master_peer)).ports(DEFAULT_MASTER_PORT).start();
@@ -44,7 +46,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                     return null;
                 } else {
                     //if I'm the destination I only have to parse message
-                    return _listener.parseMessage(message);
+                    return listener.parseMessage(message);
                 }
 
             }
@@ -209,7 +211,7 @@ public class AnonymousChatImpl implements AnonymousChat {
         futureDirect.addListener(new BaseFutureAdapter<FutureDirect>() {
             public void operationComplete(FutureDirect future) throws Exception {
                 if (future.isSuccess()) {
-                    System.out.println("Io peer -> " + peer.peerID() + " Ho inviato a " + peerForwarder.peerId());
+                    System.out.println("peer id: " + peer.peerID() + " ho inviato a " + peerForwarder.peerId());
                 }
             }
         });
@@ -217,9 +219,6 @@ public class AnonymousChatImpl implements AnonymousChat {
 
     public boolean leaveNetwork() {
         boolean fault = true;
-        if (registeredRooms.size() == 0) {
-            return false;
-        }
 
 
         for (int i = 0; i < registeredRooms.size(); i++) {
@@ -267,7 +266,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            return false;
         }
         return false;
     }
