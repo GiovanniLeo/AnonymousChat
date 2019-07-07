@@ -53,6 +53,7 @@ public class AnonymousChatImpl implements AnonymousChat {
 
         });
         Room forwarderRoom;
+
         try {
             FutureGet f = _dht.get(Number160.createHash("forwarderRoom")).start();
             f.awaitUninterruptibly();
@@ -62,11 +63,11 @@ public class AnonymousChatImpl implements AnonymousChat {
                     joinRoom("forwarderRoom");
             } else if (f.isSuccess() && f.isEmpty()) {
                 createRoom("forwarderRoom");
+                joinRoom("forwarderRoom");
             }
         } catch (Exception e) {
-           e.printStackTrace();
+            e.printStackTrace();
         }
-
     }
 
 
