@@ -18,14 +18,14 @@ import static org.junit.Assert.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AppTest
 {
-    private List<Pair<AnonymousChatImpl, MessageListenerImpl>> lista = null;
+    private List<Pair<AnonymousChatImpl, MessageListenerImpl>> peers = null;
     private AnonymousChatImpl peer0,peer1,peer2,peer3,peer4;
     private MessageListenerImpl listener0,listener1,listener2,listener3,listener4;
 
     @Test
     public  void testMethods() throws IOException {
         boolean flag;
-        lista = new ArrayList<Pair<AnonymousChatImpl, MessageListenerImpl>>();
+        peers = new ArrayList<Pair<AnonymousChatImpl, MessageListenerImpl>>();
 
         listener0 = new MessageListenerImpl(0);
         listener1 = new MessageListenerImpl(1);
@@ -39,11 +39,11 @@ public class AppTest
         peer3 = new AnonymousChatImpl(3, "127.0.0.1", listener3);
         peer4 = new AnonymousChatImpl(4, "127.0.0.1", listener4);
 
-        lista.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer0, listener0));
-        lista.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer1, listener1));
-        lista.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer2, listener2));
-        lista.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer3, listener3));
-        lista.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer4, listener4));
+        peers.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer0, listener0));
+        peers.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer1, listener1));
+        peers.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer2, listener2));
+        peers.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer3, listener3));
+        peers.add(new Pair<AnonymousChatImpl, MessageListenerImpl>(peer4, listener4));
 
         //This should create a room because the room not exist
         flag = peer1.createRoom("Stanza1");
@@ -65,10 +65,10 @@ public class AppTest
         Message message = new Message("Hello World","Stanza1");
         peer1.sendMessage(message.getRoomName(),message.getMessage());
 
-        for(int i = 0; i<lista.size(); i++) {
-            if(i!=1 && lista.get(i).element0().getRegisteredRooms().contains("Stanza1")) {
-                while(!lista.get(i).element1().getArrived());
-                assertTrue(lista.get(i).element1().getMsg().getMessage().equals(message.getMessage()));
+        for(int i = 0; i<peers.size(); i++) {
+            if(i!=1 && peers.get(i).element0().getRegisteredRooms().contains("Stanza1")) {
+                while(!peers.get(i).element1().getArrived());
+                assertTrue(peers.get(i).element1().getMsg().getMessage().equals(message.getMessage()));
             }
         }
         //The peer should not send a message due to he isn't in the room
