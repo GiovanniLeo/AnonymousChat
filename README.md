@@ -48,7 +48,7 @@ The project is based on creating an anonymous chat. Two peers can communicate an
 ### Build app in a Docker container
 
 First of all you can build your docker container:  
-```docker build --no-cache -t auction_mechanism .```
+```docker build --no-cache -t anonymous_chat ```
 
 #### Start the master peer
 
@@ -65,7 +65,7 @@ When master is started you have to check the ip address of your container:
 - Check the IP address: ```docker inspect <container ID>```
 
 Now you can start your peers varying the unique peer id:  
-```docker run -i --name PEER-1 -e MASTERIP="172.17.0.2" -e ID=1 anonymousChat```
+```docker run -i --name PEER-1 -e MASTERIP="172.17.0.2" -e ID=1 anonymous_chat```
 
 **To run correctly the application you must run at least three peers.**
 
