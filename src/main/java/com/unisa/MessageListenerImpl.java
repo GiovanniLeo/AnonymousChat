@@ -23,7 +23,6 @@ public class MessageListenerImpl implements  MessageListener {
         if (terminal != null){
             terminal.println("(Direct Message Received) "+msg.getMessage());
         }
-        System.out.println("peer"+peerID+" -> (Direct Message Received) "+msg.getMessage());
         return Constants.SUCCESS;
     }
 

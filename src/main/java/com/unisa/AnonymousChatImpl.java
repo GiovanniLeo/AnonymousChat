@@ -211,8 +211,8 @@ public class AnonymousChatImpl implements AnonymousChat {
         FutureDirect futureDirect = _dht.peer().sendDirect(peerForwarder).object(message).start();
         futureDirect.addListener(new BaseFutureAdapter<FutureDirect>() {
             public void operationComplete(FutureDirect future) throws Exception {
-                if (future.isSuccess()) {
-                    System.out.println("Forwarding Start");
+                if (!future.isSuccess()) {
+                    System.out.println("Send error");
                 }
             }
         });
