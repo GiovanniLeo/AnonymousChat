@@ -48,7 +48,7 @@ The project is based on creating an anonymous chat. Two peers can communicate an
 ### Build app in a Docker container
 
 First of all you can build your docker container:  
-```docker build --no-cache -t anonymousChat .```
+```docker build --no-cache -f "Dockerfile" -t anonymouschat .```
 
 #### Start the master peer
 
