@@ -54,7 +54,7 @@ public class Room implements Serializable {
             int random_number = r.nextInt(peers.size());
             if(!(peerToArray[random_number].peerId().equals(sourcePeer.peerId()))&&!(peerToArray[random_number].peerId().equals(destinationPeer.peerId())))
                 return  peerToArray[random_number];
-            }
         }
-
     }
+
+}
