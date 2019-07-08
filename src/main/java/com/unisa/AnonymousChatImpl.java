@@ -62,6 +62,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                     joinRoom("forwarderRoom");
             } else if (f.isSuccess() && f.isEmpty()) {
                 createRoom("forwarderRoom");
+                joinRoom("forwarderRoom");
             }
         } catch (Exception e) {
            e.printStackTrace();
