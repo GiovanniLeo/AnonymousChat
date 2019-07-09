@@ -1,8 +1,6 @@
 package com.unisa;
 
-import net.tomp2p.dht.FutureGet;
-import net.tomp2p.dht.PeerBuilderDHT;
-import net.tomp2p.dht.PeerDHT;
+import net.tomp2p.dht.*;
 import net.tomp2p.futures.BaseFutureAdapter;
 import net.tomp2p.futures.FutureBootstrap;
 import net.tomp2p.futures.FutureDirect;
@@ -68,6 +66,7 @@ public class AnonymousChatImpl implements AnonymousChat {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
 
@@ -131,12 +130,21 @@ public class AnonymousChatImpl implements AnonymousChat {
                 room = (Room) futureGet.dataMap().values().iterator().next().object();
                 if (room.getPeers().contains(peer.peerAddress())) {
                     room.removePeer(peer.peerAddress());
-                    _dht.put(Number160.createHash(_room_name)).data((new Data(room))).start().awaitUninterruptibly();
-                    registeredRooms.remove(_room_name);
-                    return true;
+                    FuturePut futurePut = _dht.put(Number160.createHash(_room_name)).data((new Data(room))).start();
+                    futurePut.awaitUninterruptibly();
+                    if (futurePut.isSuccess()){
+                        registeredRooms.remove(_room_name);
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+
+
                 } else {
                     return false;
                 }
+
             }
         } catch (Exception e) {
             return false;
@@ -220,18 +228,23 @@ public class AnonymousChatImpl implements AnonymousChat {
 
     public boolean leaveNetwork() {
         boolean fault = true;
-
-
+        boolean error;
+        ArrayList<String> roomToremove = new ArrayList();
         for (int i = 0; i < registeredRooms.size(); i++) {
-            boolean error = leaveRoom(registeredRooms.get(i));
+            roomToremove.add(registeredRooms.get(i));
+        }
+
+        for (int i = 0; i < roomToremove.size();i++){
+            error = leaveRoom(roomToremove.get(i));
             if (!error) fault = false;
         }
 
         if (!fault) return false;
-        System.out.println("Shutdown start");
+
         try {
             _dht.peer().announceShutdown().start().awaitUninterruptibly();
         } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
 
@@ -248,6 +261,7 @@ public class AnonymousChatImpl implements AnonymousChat {
                         .iterator()
                         .next()
                         .object();
+
                 if (room.getPeers().size() == 1) {
                     Object[] peersInRoom = room.getPeers().toArray();
                     PeerAddress peerInRoom = (PeerAddress) peersInRoom[0];
